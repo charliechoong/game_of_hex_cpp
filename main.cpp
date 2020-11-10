@@ -2,10 +2,11 @@
 #include <iostream>
 
 using namespace std;
-using namespace N;
 
 int main() {
-    HexGraph g = HexGraph();
-    g.print_board();
+    HexGraph board = HexGraph();
+    board.print_board();
+    board.initialize_players();
+    board.print_board();
     return 0;
 }
