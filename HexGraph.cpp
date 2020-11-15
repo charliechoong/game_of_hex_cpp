@@ -6,24 +6,19 @@ using namespace std;
 // Constructs graph for board
 HexGraph ::HexGraph(const int size) : size(size)
 {
-    int count = 0;
-    map<int, vector<int>> *v_ptr = &edge_list;
     for (int i = 0; i < size; i++)
     {
         vector<char> new_row;
         for (int j = 0; j < size; j++) {
-            make_node(i, j, v_ptr);
             new_row.push_back('.');
         }
-        grids.push_back(new_row);
-        
+        grids.push_back(new_row);       
     }
 }
 
 // Create edges for a given node defined by (i, j)
 // edge_list contains the edges list for every node.
-void HexGraph::make_node(int i, int j, map<int, vector<int>> *m)
-//vector<int> HexGraph::make_node(int i, int j, vector<int> v)
+void HexGraph::make_node(int i, int j, map<int, vector<int>> *player)
 {
     vector<int> v;
     // corner node: top left
@@ -94,7 +89,7 @@ void HexGraph::make_node(int i, int j, map<int, vector<int>> *m)
         v.push_back(map_to_int(i + 1, j - 1));
         v.push_back(map_to_int(i + 1, j));
     }    
-    (*m)[map_to_int(i, j)] = v;
+    (*player)[map_to_int(i, j)] = v;
 }
 
 int HexGraph ::get_board_size()
@@ -106,7 +101,12 @@ void HexGraph ::initialize_players()
 {
     grids[0][0] = 'X';
     grids[size - 1][size - 1] = 'O';
+    map<int, vector<int>> *p1 = &player1;
+    map<int, vector<int>> *p2 = &player2;
+    make_node(0, 0, p1);
+    make_node(size-1, size-1, p2);
 }
+
 // Checks if a move is legal.
 // Move is legal if it is unoccupied and at least one of surrounding
 // grids is occupied by itself
@@ -139,6 +139,30 @@ bool HexGraph ::is_empty_grid(int x, int y)
     return grids[x][y] == '.';
 }
 
+// Checks if game is won
+bool HexGraph ::is_won() {
+    return false;
+}
+
+// Makes a move
+// Updates the content of the grid square
+// & adds edges to player's graph
+void HexGraph ::make_move(int player, int move) {
+    map<int, vector<int>> *v_ptr;
+    char shape;
+    if (player == 1) {
+        shape = 'X';
+        v_ptr = &player1;
+    } else {
+        shape = 'O';
+        v_ptr = &player2;
+    }   
+    int x = get<0>(map_to_coord(move));
+    int y = get<1>(map_to_coord(move));
+    grids[x][y] = shape;
+    make_node(x, y, v_ptr);
+}
+
 // Prints the board at current state
 void HexGraph::print_board()
 {
@@ -168,7 +192,7 @@ void HexGraph::print_board()
     cout << "Size of board: " << size << endl;
     cout << get<0>(map_to_coord(32)) << " " << get<1>(map_to_coord(32)) << endl;
     cout << "Edges of (0, 0): ";
-    for (auto edge: edge_list[0])
-        cout << edge << " ";
+    //for (auto edge: edge_list[0])
+    //    cout << edge << " ";
 
 };
