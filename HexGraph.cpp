@@ -111,12 +111,18 @@ void HexGraph ::initialize_players()
 // Move is legal if it is unoccupied and at least one of surrounding
 // grids is occupied by itself
 // Returns true if move is legal, otherwise false
-bool HexGraph ::is_legal_move(int pos)
+bool HexGraph ::is_legal_move(int turn, int pos)
 {
     tuple<int, int> coord = map_to_coord(pos);
     int x = get<0>(coord);
     int y = get<1>(coord);
-    return is_empty_grid(x, y);
+    char shape;
+    if (turn == 1) {
+        shape = 'X';
+    } else {
+        shape = 'O';
+    } 
+    return is_empty_grid(x, y) and is_reachable_move(x, y, shape);
 }
 
 // Returns the coordinates of the grid given integer input by user
@@ -144,6 +150,34 @@ bool HexGraph ::is_won() {
     return false;
 }
 
+bool HexGraph ::is_reachable_move(int x, int y, char player) {
+    // check corner nodes
+    if (x == 0 and y == 0) 
+        return grids[x][y+1] == player ||  grids[x-1][y] == player;
+    else if (x == 0 and y == size-1)
+        return grids[x][y-1] == player || grids[x+1][y] == player || grids[x+1][y-1] == player;
+    else if (x == size-1 and y == 0)
+        return grids[x][y+1] == player ||  grids[x-1][y] == player || grids[x-1][y-1] == player;
+    else if (x == size-1 and y == size-1)
+        return grids[x][y-1] == player ||  grids[x-1][y] == player;
+    // check top nodes
+    else if (x == 0)
+        return grids[x][y-1] == player || grids[x][y+1] == player || grids[x+1][y] == player || grids[x+1][y-1] == player;
+    // check left nodes
+    else if (y == 0)
+        return grids[x-1][y] == player || grids[x-1][y+1] == player || grids[x][y+1] == player || grids[x+1][y] == player;
+    // check right nodes
+    else if (x == size-1)
+        return grids[x-1][y] == player || grids[x][y-1] == player || grids[x+1][y] == player || grids[x+1][y-1] == player;
+    // check bottom nodes
+    else if (y == size-1)
+        return grids[x-1][y] == player || grids[x-1][y+1] == player || grids[x][y+1] == player || grids[x][y-1] == player;
+    // check internal node
+    else
+        return grids[x-1][y] == player || grids[x-1][y+1] == player || grids[x][y+1] == player || grids[x][y-1] == player || 
+        grids[x+1][y] == player || grids[x+1][y-1] == player;
+}
+
 // Makes a move
 // Updates the content of the grid square
 // & adds edges to player's graph
@@ -159,6 +193,7 @@ void HexGraph ::make_move(int player, int move) {
     }   
     int x = get<0>(map_to_coord(move));
     int y = get<1>(map_to_coord(move));
+    cout << x;
     grids[x][y] = shape;
     make_node(x, y, v_ptr);
 }

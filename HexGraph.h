@@ -11,9 +11,10 @@ public:
     void initialize_players();
     void print_board();
     void make_move(int, int);
-    bool is_legal_move(int);
+    bool is_legal_move(int, int);
     bool is_won();
     bool is_empty_grid(int, int);
+    bool is_reachable_move(int, int, char);
 
 private:
     std::tuple<int, int> map_to_coord(int);
