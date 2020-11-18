@@ -7,7 +7,8 @@ int main() {
     HexGraph board = HexGraph();
     board.initialize_players();
     board.print_board();
-    int move, turn = 1;
+    int move;
+    int turn = 1;
     while (!board.is_won()) {
         cout << "Input move: ";
         cin >> move;
@@ -15,6 +16,7 @@ int main() {
             cout << "Illegal move. Please input again: ";
             cin >> move;
         }
+        cout << "debug" << endl;
         board.make_move(turn, move);
         board.print_board();
         if (turn == 1) 
